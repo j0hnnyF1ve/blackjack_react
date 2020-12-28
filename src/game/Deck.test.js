@@ -30,9 +30,6 @@ describe('Deck', () => {
             expect(numCards).toBe(4);
         }
 
-        // For debugging:
-        // console.log("The completed deckMap", deckMap);
-        // console.log("The internal deckmap", Deck.getDeckMap() );
     });
 
     test("Dealing 53 cards should call console.error and return null", () => {

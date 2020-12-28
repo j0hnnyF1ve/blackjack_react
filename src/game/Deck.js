@@ -47,7 +47,6 @@ class Deck {
             }
         }
         
-        // console.log(`[dealCard] - Selected Card ${card} - Current Deck: `, this.numCards, this.deckMap);
         return card;
     }
 
@@ -59,7 +58,6 @@ class Deck {
             this.deckMap.set(i, 4);
             this.numCards += 4;
         }   
-        // console.log(this.numCards, this.deckMap);
     };
 
     /* 

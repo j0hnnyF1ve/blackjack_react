@@ -20,6 +20,8 @@ GameEngine.dealToPlayer();
 
 
 function App() {
+  // These state variables concern the state of the game, and affect 
+  // flow of the game
   let [hideDealerCard, setHideDealerCard]   = useState(true);
   let [gameFinished, setGameFinished]       = useState(false);
   let [didPlayerStand, setDidPlayerStand]   = useState(false);
@@ -28,10 +30,11 @@ function App() {
   let [activeHand, setActiveHand]           = useState(GameEngine.getActiveHandIndex() );
   let [playerMoney, setPlayerMoney]         = useState(GameEngine.getPlayer().getMoney() );
 
-  let [messages, setMessages]             = useState([]);
+  let [messages, setMessages]           = useState([]);
   let [dealerCards, setDealerCards]     = useState([...GameEngine.getDealer().getHand().getCards() ]);
   let [playerCards, setPlayerCards]     = useState([...GameEngine.getPlayer().getHands()]);
   
+  // These control whether a button is enabled or disabled
   let [controlsStatus, setControlsStatus] = useState({
     hitDisabled: false,
     standDisabled: false,
@@ -39,19 +42,6 @@ function App() {
     splitDisabled: true,
     restartDisabled: false,
     resetDisabled: true
-  });
-
-  let playerDecks = playerCards.map( (hand, index) => { 
-    let finished = hand.stand || hand.finished;
-    let bet = hand.bet;
-    let win = hand.win;
-
-    return (<PlayerCards 
-      win={win} 
-      bet={bet} 
-      finished={finished} 
-      key={index} 
-      cards={hand.getCards()}></PlayerCards>);
   });
 
   // This effect only occurs when a player stands
@@ -62,7 +52,6 @@ function App() {
     if(didPlayerStand === true) {
       interval = setInterval( () => {
         const currentState = GameEngine.evaluate(gameFinished);
-        console.log("didPlayerStand", currentState);
         
         if(currentState.dealer.shouldHit === true) {
           GameEngine.dealToDealer();
@@ -77,7 +66,7 @@ function App() {
     }
 
     return () => clearInterval(interval);
-  }, [didPlayerStand]);
+  }, [gameFinished, didPlayerStand]);
 
   // This effect will run every time the players cards change
   // Or the game reaches a finished state in some way
@@ -153,7 +142,7 @@ function App() {
 
     setMessages(messages);
     setPlayerMoney(GameEngine.getPlayer().getMoney() );
-  }, [gameFinished, playerCards]);
+  }, [didPlayerSplit, gameFinished, playerCards]);
   
   // hitHandler - Handles when the user clicks the hit button
   const hitHandler = () => { 
@@ -215,7 +204,6 @@ function App() {
   // splitHandler - Handles when the user clicks the Split button
   const splitHandler = () => { 
     let indexes = GameEngine.splitPlayerHand( GameEngine.getActiveHandIndex() );
-    console.log(indexes);
 
     GameEngine.dealToPlayer(null, indexes[0]);
     GameEngine.dealToPlayer(null, indexes[1]);
@@ -267,6 +255,20 @@ function App() {
     continueHandler();
   };
 
+  // PlayerCards html for the actual Player
+  let playerDecks = playerCards.map( (hand, index) => { 
+    let finished = hand.stand || hand.finished;
+    let bet = hand.bet;
+    let win = hand.win;
+
+    return (<PlayerCards 
+      win={win} 
+      bet={bet} 
+      finished={finished} 
+      key={index} 
+      cards={hand.getCards()}></PlayerCards>);
+  });
+
   return (
     <div className="App">
       <Header messages={messages}></Header>
@@ -280,7 +282,6 @@ function App() {
         status={controlsStatus}
 
         activeHand={activeHand}
-        // selectPlayer={selectPlayer}
         hit={hitHandler} 
         stand={standHandler} 
         doubleDown={doubleDownHandler} 

@@ -2,7 +2,7 @@
 const Header = props => {
     let { messages } = props;
 
-    let messageHtml = messages.map( message => <span>{message}</span>)
+    let messageHtml = messages.map( (message, index) => <span key={index}>{message}</span>)
 
     return (
         <header className="Header">
