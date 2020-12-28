@@ -14,11 +14,16 @@ class GameEngine {
         this.Dealer         = new Dealer();
     }
 
+    // #public method
+    // initialize - Used to initialize the game to a "start" state
+    // Player's credits are initialized using this step
     initialize(money=1000) {
         this.Player.money = money;
         this.resetGame();
     }
 
+    // #public method
+    // resetGame - Used to reset the game to a new hand
     resetGame() {
         this.gameFinished = false;
         this.activeHand = 0;
@@ -27,8 +32,9 @@ class GameEngine {
         Deck.resetDeck();
     }
 
+    // #public method
     // evaluate - will be called by a client to figure out the current state of 
-    //   the game for the dealer and player
+    // the game for the dealer and player
     evaluate(gameFinished=false) {
         if(this.Player.hands.length === 0 || this.Dealer.hand.cards.length === 0) {
             console.log("[GameEngine.evaluate] - Player or Dealer has no hand to evaluate");
@@ -56,6 +62,7 @@ class GameEngine {
         return currentState;
     }
 
+    // # private method
     // evaluateDealer - evaluate the current state of the dealer
     // * dealerVal - The dealer's current card value
     evaluateDealer(dealerVal) {
@@ -73,19 +80,18 @@ class GameEngine {
 
         // Check if Dealer has Blackjack
         if(this.gotBlackjack(dealerVal) ) {
-
-            gameFinished = true;
-            dealerState.win = true;
-            dealerState.hasBlackjack = true;
+            gameFinished                = true;
+            dealerState.win             = true;
+            dealerState.hasBlackjack    = true;
         }
         // Check if Dealer went bust
         else if(dealerVal > 21) {
-            gameFinished   = true;
-            dealerState.win     = false;
-            dealerState.bust    = true;
+            gameFinished                = true;
+            dealerState.win             = false;
+            dealerState.bust            = true;
         }
         else if(dealerVal < 17) {
-            dealerState.shouldHit = true;
+            dealerState.shouldHit       = true;
         }
 
         return {
@@ -94,6 +100,7 @@ class GameEngine {
         }
     }
 
+    // # private method
     // evaluatePlayer - evaluate the current state of the player
     // * isGameFinished - boolean, represents the game finished state
     // * dealerVal - The dealer's current card value
@@ -166,6 +173,9 @@ class GameEngine {
         };
     }
 
+    // # public method
+    // calculateWinnings - Calculates how to adjust the player's money based on each hand's status (win/loss)
+    // * playerState - Contains the status of each hand (lose, win, bust) + its bet
     calculateWinnings(playerState) {
         playerState.forEach(hand => {
             let { loss, bust, win, bet } = hand;
@@ -179,6 +189,7 @@ class GameEngine {
         });
     }
 
+    // # private method - used internally to get the value of a set of cards
     // getCardsVal - Gets the value of a list of cards
     // * cards - An array of 1 or more cards
     getCardsVal (cards) {
@@ -212,16 +223,25 @@ class GameEngine {
         return curVal;
     }
 
+    // # private method
+    // canSplit - Checks if the cards can be split
+    // * cards - An array of 2 or more cards
     canSplit(cards) {
         // Can only split a pair of cards
         if(cards.length !== 2) { return false; }
         return cards[0] === cards[1];
     }
-    
-    checkCardVal(max) { return cardVal => cardVal > max; }
-    gotBlackjack(cardVal) { return cardVal === 21; }
-    getPlayer() { return this.Player; }
 
+    // # private method
+    // gotBlackjack - Checks to see if the player got 21
+    // * cardVal - Value of a set of cards
+    gotBlackjack(cardVal) { return cardVal === 21; }
+
+    
+    // # public method
+    // dealToPlayer - Deals a card to the player
+    // * card - optional param to specify a card, mainly used for testing
+    // * curHand - index of the player's hand
     dealToPlayer(card=null, curHand=0) {
         if(curHand < 0 || curHand > this.Player.getHands().length) {
             throw new Error(`[GameEngine.dealToPlayer] - curHand index is out of bounds (${curHand})`)
@@ -232,11 +252,23 @@ class GameEngine {
             hand.addCard( Deck.dealCard(card) );
         }
     }
+
+    // # public method
+    // dealToDealer - Deals a card to the dealer
+    dealToDealer() {
+        this.Dealer.hand.addCard( Deck.dealCard() );
+    }    
     
+    // # private method
+    // clearPlayerHands - Clear the previous hand, 
+    //   - initialize the player's hand to a new hand
     clearPlayerHands() {
         this.Player.setHands([new Hand(this.defaultBet)]);
     }
     
+    // # public method
+    // splitPlayerHand - Split the player's hand specified by the index
+    // * index - which player's hand to split
     splitPlayerHand(index) {
         if(index < 0 || index > this.Player.getHands().length) { 
             throw new Error(`[GameEngine.splitPlayerHand] - index is out of bounds`);
@@ -261,9 +293,12 @@ class GameEngine {
         return indexes;
     }
 
+    // # public method
+    // doubleDown - Double downs the specified hand, marks it as finished
+    // * curHand - the index of the hand to be Doubled Down
     doubleDown(curHand = 0) {
         if(curHand < 0 || curHand > this.Player.getHands().length) {
-            throw new Error(`[GameEngine.dealToPlayer] - curHand index is out of bounds (${curHand})`)
+            throw new Error(`[GameEngine.doubleDown] - curHand index is out of bounds (${curHand})`)
         }
 
         let hand = this.Player.getHand(curHand);
@@ -271,16 +306,25 @@ class GameEngine {
         hand.setFinished(true);
     }
 
-    getDealer() { return this.Dealer; }
+    // # public method
+    // didAllHandsFinish - Checks each hand to see if it's in a state that would be finished
+    // - finished would be if the hand either stood, doubled down, or finished some other way (bust or win conditions)
+    didAllHandsFinish() {
+        let count = 0;
+        this.Player.getHands().forEach( hand => {
+            if(hand.getStand() === true || hand.getDoubleDown() || hand.getFinished() === true) { count++; }
+        });
 
-    dealToDealer() {
-        this.Dealer.hand.addCard( Deck.dealCard() );
+        return count === this.Player.getNumOfHands();
     }
 
+    // # private method
+    // clearDealerHand - clears and initializes the dealer's hand to a new one
     clearDealerHand() {
         this.Dealer.hand = new Hand();
     }
 
+    // # public method
     // incrementActiveHand - moves to the next active hand
     incrementActiveHand() {
         const incrementIndex = val => (val+1 > this.getPlayer().getNumOfHands() - 1) ? 0 : val+1;
@@ -305,23 +349,27 @@ class GameEngine {
         this.activeHand = index;
     }
 
-    getActiveHand() {
-        return this.Player.getHand(this.activeHand);
-    }
+    // # private setter
+    // only used for unit tests
+    // activeHand - the hand to set activeHand to
+    setActiveHand(activeHand) { this.activeHand = activeHand; }
 
-    getActiveHandIndex() {
-        return this.activeHand;
-    }
+    // # public method
+    // getActiveHand - return the hand that the game considers active
+    getActiveHand() { return this.Player.getHand(this.activeHand); }
 
-    didAllHandsFinish() {
-        let count = 0;
-        this.Player.getHands().forEach( hand => {
-            if(hand.getStand() === true || hand.getDoubleDown() || hand.getFinished() === true) { count++; }
-        });
+    // # public method
+    // getActiveHand - return the index of the hand that the game considers active
+    getActiveHandIndex() { return this.activeHand; }
 
-        return count === this.Player.getNumOfHands();
-    }
+    // # public method, getter
+    getPlayer() { return this.Player; }
 
+    // # public method, getter
+    getDealer() { return this.Dealer; }
+
+    // # public method, getter
+    getGameFinished() { return this.gameFinished; }
 };
 
 // GameEngine should be a singleton

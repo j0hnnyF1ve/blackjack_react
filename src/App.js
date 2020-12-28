@@ -10,6 +10,7 @@ import Controls from './components/Controls';
 // Vanilla JS GameEngine
 // GameEngine would be the Controller in an MVC approach
 import GameEngine from './game/GameEngine';
+window.GameEngine = GameEngine;
 
 // Statements to initialize the GameEngine
 GameEngine.initialize();
