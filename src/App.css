@@ -1,0 +1,111 @@
+button:hover { cursor: pointer; }
+
+.App {
+  text-align: center;
+}
+
+.Header {
+  min-height: 5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.Header p { margin: 0; }
+.Header span { margin: 0 7px; }
+
+.Content {
+  background-color: #187806;
+  height: calc(75vh - 20px);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.PlayerContent {
+  width: 95%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.MoneyDisplay {
+  max-height: 5vh;
+  display: flex;
+  justify-content: center;  
+}
+
+.Controls { 
+  min-height: 10vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.Controls button { 
+  margin: 5px;
+  min-width: 15vh;
+}
+
+.PlayerControls {
+  display: flex;
+  flex-direction: column;
+  min-width: 10vw;
+  height: 15vh;
+  margin: 0 5px;
+  overflow: auto;  
+}
+
+.PlayerControls span {
+  width: 95%;
+  border: solid 1px #000;
+  margin: 3px 0;
+}
+.PlayerControls span.active { 
+  background-color: gold;
+}
+
+.PlayerCards {
+  display: flex;
+  flex-direction: column;
+  max-width: 100vw;
+  margin: 0 15px;
+}
+
+.PlayerCards.finished { opacity: 0.8; }
+.PlayerCards.win { border: solid 1px gold; }
+
+.PlayerCards .Cards { 
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.Card {
+  position: relative;
+  display: flex;
+  background-color: #fff;
+  color: #000;
+  border: solid 1px #000;
+  margin: 5px;
+  min-height: 20vh;
+  min-width: 15vh;
+}
+.Card.hide { 
+  background-color: #000;
+}
+
+.Card .ul {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+
+.Card .lr {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+}
