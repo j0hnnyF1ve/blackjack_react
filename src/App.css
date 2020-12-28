@@ -15,7 +15,7 @@ button:hover { cursor: pointer; }
 
 .Content {
   background-color: #187806;
-  height: calc(75vh - 20px);
+  height: calc(72vh - 20px);
   padding: 10px 0;
   display: flex;
   flex-direction: column;
