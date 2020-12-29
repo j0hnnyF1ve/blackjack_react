@@ -5,9 +5,11 @@ A simple React Blackjack game.
 ---
 ## Getting Started
 
-run `npm i` in the root to download dependencies
-run `npm start` to start the app locally
-run `npm test` to run the test suite for the *game* classes
+git clone the repo into a directory of your choosing\
+
+run `npm i` in the this new directory to download dependencies\
+run `npm start` to start the app locally\
+run `npm test` to run the test suite for the *game* classes\
 
 ---
 
